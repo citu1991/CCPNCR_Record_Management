@@ -1,0 +1,65 @@
+﻿@model CCPNCR_Record_Management.Models.FileVolume
+@{
+    ViewBag.Title = "File Volume";
+    if (Session["UserRoleType"].ToString() == "Admin")
+    {
+        Layout = "~/Views/Shared/MasterLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/UsersLayout.cshtml";
+    }
+}
+
+@if (@ViewBag.Message == "Success")
+{
+    <div class="alert alert-success alert fade show" role="alert">
+        <strong>Success !</strong>  File Volume Inserted Successfully.
+    </div>
+}
+else if (@ViewBag.Message == "Failed")
+{
+    <div class="alert alert-danger alert fade show" role="alert">
+        <strong>Failed !</strong>  File Volume Already Exists.
+    </div>
+}
+else if (@ViewBag.Message == "Alert")
+{
+    <div class="alert alert-danger alert fade show" role="alert">
+        <strong>Failed !</strong>  Something wrong, please check before submit.
+    </div>
+}
+<h2 style="text-align:center">Add File Volume</h2>
+<hr />
+@using (Html.BeginForm("InsertFileVolume", "FileVolume", FormMethod.Post, null))
+{
+    <fieldset class="col-lg-6">
+        <div class="form-group">
+            <div class="table-responsive">
+                @if (Model != null)
+                {
+
+                    <table class="table table-borderless">
+                        <tr>
+                            <td>
+                                <label>File Volume :</label>
+                            </td>
+
+                            <td>
+                                @Html.EditorFor(m => m.FileVolumeName, new { @class = "form-control", placeholder = "Enter file Volume" })
+                            </td>
+
+                            <td>
+                                <input type="submit" value="Submit" class="btn btn-success" />
+                            </td>
+                        </tr>
+                    </table>
+                }
+            </div>
+        </div>
+    </fieldset>
+}
+<br />
+<br />
+<hr />
+@Html.Partial("_ListFileVolume", Model)

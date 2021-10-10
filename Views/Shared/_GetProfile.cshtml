@@ -1,0 +1,136 @@
+﻿@model CCPNCR_Record_Management.Models.SignUp
+
+ @if(@ViewBag.Message=="Success")
+    {
+<div class="alert alert-success alert fade show" role="alert">
+    <strong>Success !</strong>  Profile Updation done Successfully.
+</div>
+    }
+    else if (@ViewBag.Message == "Failed")
+    {
+    <div class="alert alert-danger alert fade show" role="alert">
+        <strong>Failed !</strong>  Profile Updation not done Successfully.
+    </div>
+    }
+
+    @using (Html.BeginForm("UpdateProfile", "Admin", FormMethod.Post, null))
+    {
+
+
+        <table class="table table-borderless">
+            <thead>
+                <tr>
+                    <th scope="col" colspan="3" style=" text-align: center; background-color: orange; color: white;">User Profile</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td>
+                        User Name :
+                        @Html.HiddenFor(model => model.UserId)
+                    </td>
+                    <td>
+                        @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "input-name-login", id = "Usernameupdate", onchange = "checkusername()" } })
+                    </td>
+                    <td><label id="usernamelabel" /></td>
+                </tr>
+                <tr>
+                    <td>First Name : </td>
+                    <td>
+                        @Html.EditorFor(model => model.UserFName, new { htmlAttributes = new { @class = "input-name-login" } })
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Last Name : </td>
+                    <td>
+                        @Html.EditorFor(model => model.UserLName, new { htmlAttributes = new { @class = "input-name-login" } })
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Email Id : </td>
+                    <td>
+                        @Html.EditorFor(model => model.UserEmail, new { htmlAttributes = new { @class = "input-name-login", id = "emailidupdate", onchange = "EmailVerify()" } })
+                    </td>
+                    <td><label id="emailIdlabel" /></td>
+                </tr>
+                <tr>
+                    <td>Mobile No : </td>
+                    <td>
+                        @Html.EditorFor(model => model.UserMobile, new { htmlAttributes = new { @class = "input-name-login", id = "mobileupdate", onchange = "MobileVerify()" } })
+                    </td>
+                    <td><label id="mobilenolabel" /></td>
+                </tr>
+                <tr>
+                    <td colspan="3"><input type="submit" class="btn btn-secondary" value="Update Profile" /></td>
+                </tr>
+            </tbody>
+        </table>
+    }
+    @*<script src="~/Scripts/jquery-3.4.1.js" crossorigin="anonymous"></script>*@
+    <script type="text/javascript">
+        function checkusername() {
+            var unsu = $("#Usernameupdate").val();
+            if (unsu != null || unsu != '') {
+
+                $.ajax({
+                    url: '/JSONCalls/CheckUserNameAvailability',
+                    type: "Get",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: { UserName: unsu },
+                    success: function (res) {
+                        if (res > 0) {
+                            $('#Usernameupdate').css("background", "PaleGreen");
+                            $('#usernamelabel').text('Username Available');
+
+                        }
+                        else {
+                            $('#Usernameupdate').css("background", "DarkSalmon");
+                            $('#usernamelabel').text(unsu + '  is Not Available');
+                        }
+                    },
+                    error() {
+                        alert('Error! Please Try again later.');
+                    }
+                });
+            }
+            else {
+                alert('Enter Username.');
+            }
+        };
+
+        function EmailVerify() {
+            var mailformat = /^([a-zA-Z0-9_.+-])+\@@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            var email = $("#emailidupdate").val();
+            if (email != '' || email != null) {
+                if (email.match(mailformat)) {
+                    $('#emailidupdate').css("background", "PaleGreen");
+                    $('#emailIdlabel').text('Valid email address!');
+
+                }
+                else {
+                    $('#emailidupdate').css("background", "DarkSalmon");
+                    $('#emailIdlabel').text('Invalid email address!');
+                }
+            } else { alert('Enter Email Id.'); }
+        };
+
+
+        function MobileVerify() {
+            var mobileformat = /^\d{10}$/;
+            var mob = $("#mobileupdate").val();
+            if (mob != '' || mob != null) {
+                if (mob.match(mobileformat)) {
+                    $('#mobileupdate').css("background", "PaleGreen");
+                    $('#mobilenolabel').text('Valid Mobile No');
+                }
+                else {
+                    $('#mobileupdate').css("background", "DarkSalmon");
+                    $('#mobilenolabel').text('Invalid');
+                }
+            } else { alert('Enter Mobile No.'); }
+        };
+    </script>

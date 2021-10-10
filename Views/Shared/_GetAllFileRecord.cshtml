@@ -1,0 +1,330 @@
+﻿@using PagedList.Mvc;
+    @model PagedList.IPagedList<CCPNCR_Record_Management.Models.FileRecord>
+
+    @{
+        int SrNo = 0;
+    }
+
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+
+        td {
+            border: 1px solid black;
+            text-align: center;
+        }
+
+        tr {
+            text-align: center;
+        }
+
+        .dk_header {
+            height: 50px;
+            margin: 10px;
+            padding-top: 10px;
+            text-align: center;
+            background-color: black;
+            color: white;
+            font: bold;
+        }
+    </style>
+
+    @if (@ViewBag.Message == "Success")
+    {
+        <div class="alert alert-success alert fade show" role="alert">
+            <strong>Success !</strong>  File Updated  Successfully.
+        </div>
+    }
+    else if (@ViewBag.Message == "Failed")
+    {
+        <div class="alert alert-danger alert fade show" role="alert">
+            <strong>Failed !</strong>  No such Record Exists for Updation.
+        </div>
+    }
+    else if (@ViewBag.Message == "Error")
+    {
+        <div class="alert alert-danger alert fade show" role="alert">
+            <strong>Error Occured!</strong> .
+        </div>
+    }
+    else if (@ViewBag.Message != null)
+    {
+        <div class="alert alert-danger alert fade show" role="alert">
+            <strong>Exception !</strong>  @ViewBag.Message
+        </div>
+    }
+    else if (@ViewBag.Validation != null && @ViewBag.Validation != "")
+    {
+        <div class="alert alert-danger alert fade show" role="alert">
+            <strong>@ViewBag.Validation</strong>
+        </div>
+    }
+
+    <h3 style="text-align:center">List of all Files in Record and there Current Status</h3>
+
+    <fieldset class="col-lg-12" style="padding-bottom:50px">
+        <div class="form-group">
+            <div style="float:right">
+                <button type="submit" value="ExportToExcel" onclick="ExporttoExcel('EXCELAllFILE')" name="action" style="font-size:10px;width:100px;margin-bottom:10px">
+                    Export To Excel
+                </button>
+                <button type="submit" value="ExportToPdf" onclick="ExporttoPdf('PDFAllFILE')" name="action" style="font-size:10px;width:100px;margin-bottom:10px">
+                    Export To PDF
+                </button>
+            </div>           
+
+            <div class="table table-responsive">
+
+                @if (Model != null)
+                {
+                    <table class=" table table-responsive table-sm" style="font-size:small;">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>
+                                    Sr. No
+                                </th>
+                                @if (Session["UserRoleType"].ToString() != "User")
+                                {
+                                    <td>
+                                        History
+                                    </td>
+                                }
+                                <th>
+                                    Current / Last Status
+                                </th>
+
+                                <th>
+                                    File No-Vol
+                                </th>
+                                <th>
+                                    File Subject
+                                </th>
+                                <th>
+                                    NP First Page
+                                </th>
+                                <th>
+                                    NP Last Page
+                                </th>
+
+                                <th>
+                                    CP First Page
+                                </th>
+                                <th>
+                                    CP Last Page
+                                </th>
+                                <th>
+                                    Date on Last NP
+                                </th>
+                                <th>
+                                    Last Sign by
+                                </th>
+                                @if (Session["UserRoleType"].ToString() != "User" && Session["UserRoleType"].ToString() != "Record Keeper")
+                                {
+                                    <th colspan="2">
+                                        Click for Action
+                                    </th>
+                                }
+                            </tr>
+                        </thead>
+                        @if (Model.Count > 0)
+                        {
+                            for (int i = 0; i < Model.Count; i++)
+                            {
+                                <tr id="Data">
+                                    <td>
+                                        @Html.HiddenFor(modelItem => Model[i].FileRecordId)
+                                        @(SrNo + ((Model.PageNumber - 1) * Model.PageSize) + 1).
+                                    </td>
+
+
+                                    @if (Session["UserRoleType"].ToString() != "User")
+                                    {
+                                        <td>
+                                            <div class="btn-sm btn-info" onclick="getData(@Model[i].FileRecordId,'file_Log',1)" style="font-size:10px">History</div>
+                                        </td>
+                                    }
+                                    <td>
+                                        @if (Model[i].IsApprovalSent == 1)
+                                        {<div class="btn-sm btn-danger" onclick="getData(@Model[i].FileRecordId,'Pending')" style="font-size:10px">
+                                                Still In Record but Pending for Approval <br />
+                                                [ Get Last Remarks ]
+                                            </div>}
+                                        @if (Model[i].IsApproved == 1 && Model[i].IsFileInRecord == 0)
+                                        {<div class="btn-sm btn-danger" onclick="getData(@Model[i].FileRecordId,'Out')" style="font-size:10px">
+                                                Out of Record<br />
+                                                [ Get Last Remarks ]
+                                            </div>}
+
+                                        @if (Model[i].IsFileInRecord == 1 && Model[i].IsApprovalSent == 0)
+                                        {<div class="btn-sm btn-success" onclick="getData(@Model[i].FileRecordId,'Inside')" style="font-size:10px">
+                                                Inside Record <br />
+                                                [ Get Last Remarks ]
+                                            </div>}
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model[i].FileRecordNumber)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model[i].FileRecordName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model[i].NPStart)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model[i].NPEnd)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model[i].CPStart)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model[i].CPEnd)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model[i].DateonlastNP.Date.Day)/@Html.DisplayFor(modelItem => Model[i].DateonlastNP.Date.Month)/@Html.DisplayFor(modelItem => Model[i].DateonlastNP.Date.Year)
+
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model[i].SignedByonlastNP)
+                                    </td>
+                                    @if (Session["UserRoleType"].ToString() != "User" && Session["UserRoleType"].ToString() != "Record Keeper")
+                                    {
+                                        <td>
+                                            <div class="btn-sm btn-success" onclick="EditFileRecord(@Model[i].FileRecordId)">Edit</div>
+                                        </td>
+                                        <td>
+                                            <div class="btn-sm btn-danger" onclick="DeleteFileRecord(@Model[i].FileRecordId)">Delete</div>
+                                        </td>
+
+                                    }
+                                </tr>
+                                SrNo++;
+                            }
+                        }
+                        else
+                        {
+                            <tr class="table-danger">
+                                <td colspan="10" style="text-align: center">No Data Exists</td>
+                            </tr>
+                        }
+                    </table>
+
+                }
+
+                <nav style="text-align:center;">
+                    <ul class="pagination">
+                        Showing Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount [ Total Record Count- @Model.TotalItemCount ]
+                        @Html.PagedListPager(Model, page => Url.Action("GetAllFileRecord", new { page }))
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+    </fieldset>
+
+
+    <input type="hidden" id="hiddenFileRecordId" />
+    <div class="container">
+
+        <div class="modal" id="myModal" tabindex="1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="dk_header">Message</div>
+                    <div class="modal-body">
+                        <p class="success-message">Are you sure you wish to delete this record ? </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btn_delete" class="btn btn-success" onclick="ConfirmDelete()">Confirm Delete</button>
+                        <button class="btn btn-dark" data-dismiss="modal" onclick="$('#myModal').modal('hide'); window.location.href = window.location.href;">Close</button>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="filestatusmodal"  tabindex="1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document" style="margin:30px 100px">
+                <div class="modal-content" style="width:1100px;">
+                    <div class="dk_header">Status [ Latest at Top ] <button style="float:right;padding:4px;margin-right:10px" class="btn-sm btn-danger" onclick="$('#myEditModal').modal('hide'); window.location.href = window.location.href;">X</button></div>
+                    <div class="modal-body" id="modalbodylaststatus">                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+
+        var getData = function (filerecordid, msg, page)
+        {
+            $.ajax({
+                url: '/FileMasterRecord/getMovementHistory',               
+                type: 'get',               
+                data: { FileRecordId: filerecordid, Message:msg,page:page},
+                success: function (data)
+                {
+                    $('#modalbodylaststatus').html(data)
+                    $('#filestatusmodal').modal('show');
+                    
+                }, error: function (xhr, status, error) {
+                    alert("Error: " + error.Message());
+                }
+                });
+
+
+            
+            //var url = '/FileMasterRecord/GetFileLastStatus?FileRecordId=' + filerecordid + '&Message=' + msg + '&page=' + page;
+            //$('#modalbodylaststatus').load(url, function () {
+            //  $('#filestatusmodal').modal('show');
+            //})
+        };
+
+        var DeleteFileRecord = function (FileRecordId) {
+            $("#hiddenFileRecordId").val(FileRecordId);
+            $('#myModal').modal('show');
+        };
+
+        function ConfirmDelete() {
+            var filerecordid = $("#hiddenFileRecordId").val();
+            if (filerecordid != '' && filerecordid != null) {
+                $.ajax({
+                    url: '/JSONCalls/DeleteFileRecord',
+                    data: { FileRecordId: filerecordid },
+                    type: 'POST',
+                    success: function (data) {
+                        if (data == 'Success') {
+                            $('#btn_delete').remove();
+                            $('.success-message').add().html('Record deleted successfully.');
+                            $('#row_' + FileRecordId).remove();
+
+                        }
+                        else if (data == 'Failed') {
+                            $('#btn_delete').remove();
+                            $('.success-message').add().html('Error, Record not deleted due to Movement.');
+                        }
+                    }, error: function (err) {
+                        $('#btn_delete').remove();
+                        $('#row_' + FileRecordId).remove();
+                        $('.success-message').add().html(err.statusText);
+                    }
+                });
+            } else {
+                $(".dk_header").add().html("Message");
+                $("#btn_delete").remove();
+                $(".modal-body").add().html("!Record Not Updated");
+            }
+        };
+
+        var EditFileRecord = function (FileRecordId) {
+            document.location = '/FileMasterRecord/EditFileRecord?FileRecordId=' + FileRecordId;
+        };
+
+        var ExporttoExcel = function (ExportTypeMessage) {
+            document.location = '/FileMasterRecord/ExporttoExcel?ExportTypeMessage=' + ExportTypeMessage;
+        };
+
+        var ExporttoPdf = function (ExportTypeMessage) {
+            document.location = '/FileMasterRecord/ExporttoPdf?ExportTypeMessage=' + ExportTypeMessage;
+        };
+    </script>

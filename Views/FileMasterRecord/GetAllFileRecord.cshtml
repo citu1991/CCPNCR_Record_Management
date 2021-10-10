@@ -1,0 +1,15 @@
+﻿@model PagedList.IPagedList<CCPNCR_Record_Management.Models.FileRecord>
+
+@{
+        ViewBag.Title = "GetAllFileRecord";
+        if (Session["UserRoleType"].ToString() == "Admin")
+        {
+            Layout = "~/Views/Shared/MasterLayout.cshtml";
+        }
+        else
+        {
+            Layout = "~/Views/Shared/UsersLayout.cshtml";
+        }
+    }
+
+@Html.Partial("_GetAllFileRecord", Model)

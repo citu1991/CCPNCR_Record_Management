@@ -1,0 +1,147 @@
+﻿@using PagedList.Mvc;
+@model PagedList.IPagedList<CCPNCR_Record_Management.Models.FileLastStatus>
+@{
+    int SrNo = 0;
+}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+    td {
+        border: 1px solid black;
+        text-align: left;
+        font: smaller;
+    }
+</style>
+<div class="row table-responsive" id="filelaststatus">
+    <table class=" table table-responsive table-sm" style="font-size: small; margin:5px">
+        <thead class="table-dark border-3">
+            <tr>
+                <td>Sr.No</td>
+                <td>Last Remarks by RK</td>
+                <td>Last Remarks by User</td>
+                <td>User Name</td>
+                <td>Last Date</td>
+            </tr>
+        </thead>
+        @if (Model != null)
+        {
+            if (Model[0].Error == null)
+            {
+
+                for (int i = 0; i < Model.Count; i++)
+                {
+
+                    <tr>
+                        <td> @(SrNo + ((Model.PageNumber - 1) * Model.PageSize) + 1).</td>
+                        <td>@Model[i].FCRemarksByRK</td>
+
+
+                        @if (Model[i].FCApprovalRemarksByUser != null && Model[i].FCApprovalRemarksByUser != "")
+                        {
+                            <td>
+                                @if (Model[i].FCReturnRemarksByUser != null && Model[i].FCReturnRemarksByUser != "")
+                                {
+                                    <span style="color:darkorange"> Return Remarks :</span> @Model[i].FCReturnRemarksByUser
+                                }
+                                else
+                                {
+                                    <span style="text-align: center;color: red">
+                                        As Currently File is with @Model[i].UserFullName , please return back to record room after needful done.
+                                    </span>
+                                }
+                                <br />
+                                <span style="color:#18d27b">   Approval Remarks :</span> @Model[i].FCApprovalRemarksByUser
+
+                            </td>
+                        }
+                        else if (Model[i].FCRejectionRemarksByUser != null && Model[i].FCRejectionRemarksByUser != "")
+                        {
+                            <td>
+                                <span style="color:red"> Rejection Remarks :</span> @Model[i].FCRejectionRemarksByUser
+                            </td>
+                        }
+
+                        else
+                        {
+                            <td class="table-danger " style="text-align: center">
+                                Pending for Approval/Rejection Remarks.
+                            </td>
+                        }
+
+                        <td>@Model[i].UserFullName</td>
+
+
+                        @if (Model[i].FCApprovalDate != null && Model[i].FCApprovalDate != "01/01/1900")
+                        {
+                            <td>
+                                @if (Model[i].FCReturnDate != null && Model[i].FCReturnDate != "01/01/1900")
+                                {
+                                    <span style="color: darkorange"> Return Date :</span> @Model[i].FCReturnDate
+                                }
+
+                                <br />
+                                <span style="color:#18d27b"> Approval Date :</span> @Model[i].FCApprovalDate
+                            </td>
+                        }
+                        else if (Model[i].FCRejectionDate != null && Model[i].FCRejectionDate != "01/01/1900")
+                        {
+                            <td>
+                                <span style="color:red">Rejection Date : </span>@Model[i].FCRejectionDate
+                            </td>
+                        }
+
+                        else
+                        {
+                            <td class="table-danger " style="text-align: center">
+                                Pending for Approval/Rejection Date.
+                            </td>
+                        }
+                    </tr>
+                    SrNo++;
+                }
+            }
+            else
+            {
+                <tr class="table-danger">
+                    <td colspan="5" style="text-align: center">@Model[0].Error</td>
+                </tr>
+
+            }
+
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="NoData">No data found</td>
+            </tr>
+
+        }
+    </table>
+    <nav style="text-align:center;">
+        <ul class="pagination" id="myPager">
+            Showing Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount [ Total Record Count- @Model.TotalItemCount ]
+
+            @Html.PagedListPager(Model, page => Url.Action("getMovementHistory", new { @Model[0].FileRecordId,@Model[0].Message, page }))
+        </ul>
+    </nav>
+</div>
+
+
+
+<script>
+    $('#myPager').on('click', 'a', function (e) {
+        //prevent action link normal functionality
+        e.preventDefault();
+        if (this.href != null && this.href != "")
+        {
+            $.ajax({
+                url: this.href,
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    $('#modalbodylaststatus').html(result);
+                }
+            });
+            return false;
+        }
+    });
+</script>

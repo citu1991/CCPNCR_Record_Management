@@ -1,0 +1,274 @@
+﻿@model CCPNCR_Record_Management.Models.SignUp
+@{
+    int SRNOInact = 1;
+    int SRNOAct = 1;
+    ViewBag.Title = "UsersActive_Inactive";
+    if (Session["UserRoleType"].ToString() == "Admin")
+    {
+        Layout = "~/Views/Shared/MasterLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/UsersLayout.cshtml";
+    }
+}
+
+<h2 style="text-align:center">List of In-Active Users</h2>
+<fieldset class="col-lg-12">
+    <div class="form-group">
+        <div class="table-responsive">
+            @if(Model != null)
+            {
+
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>
+                            Sr. No
+                        </th>
+                        <th>
+                            Username
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Email Id
+                        </th>
+                        <th>
+                            Mobile No
+                        </th>
+                        <th>
+                            Status
+                        </th>
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                @if (Model.User_List.Count > 0 && Model.User_List[0].UserId > 0)
+                {
+                    for (int i = 0; i < Model.User_List.Count; i++)
+                    {
+                        if (Model.User_List[i].IsActive == false)
+                        {
+                            <tr style="background-color:#f0a8927d">
+                                <td>
+                                    @Html.HiddenFor(modelItem => Model.User_List[i].UserId, new { @class = "UserId" })
+                                    @SRNOInact.
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model.User_List[i].UserName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model.User_List[i].UserFName)
+                                    @Html.DisplayFor(modelItem => Model.User_List[i].UserLName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model.User_List[i].UserEmail)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model.User_List[i].UserMobile)
+                                </td>
+                                <td>       <b>In-Active</b>     </td>
+                                <td>
+                                    <div class="btn btn-success" onclick="ActivateUser(@Model.User_List[i].UserId)">Activate User</div>
+                                </td>
+
+                            </tr>
+                            SRNOInact++;
+                        }                       
+                    }
+                }
+                else
+                {
+                    <tr class="table-danger">
+                        <td colspan="7" style="text-align: center">No Data Exists</td>
+                    </tr>
+                }
+            </table>
+
+            }
+        </div>
+    </div>
+</fieldset>
+<br />
+<br />
+<br />
+<h2 style="text-align:center">List of Active Users</h2>
+<fieldset class="col-lg-12">
+    <div class="form-group">
+        <div class="table-responsive">
+            @if (Model != null)
+            {
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>
+                                Sr. No
+                            </th>
+                            <th>
+                                Username
+                            </th>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Email Id
+                            </th>
+                            <th>
+                                Mobile No
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th>
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    @if (Model.User_List.Count > 0 && Model.User_List[0].UserId > 0)
+                    {
+                        for (int i = 0; i < Model.User_List.Count; i++)
+                        {
+                            if (Model.User_List[i].IsActive == true)
+                            {
+                                <tr style="background-color:#c8f89aab">
+                                    <td>
+                                        @Html.HiddenFor(modelItem => Model.User_List[i].UserId, new { @class = "UserId" })
+                                        @SRNOAct.
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.User_List[i].UserName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.User_List[i].UserFName)
+                                        @Html.DisplayFor(modelItem => Model.User_List[i].UserLName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.User_List[i].UserEmail)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.User_List[i].UserMobile)
+                                    </td>
+                                    <td>       <b>Active</b>     </td>
+                                    <td>
+                                        <div class="btn btn-danger" onclick="DeactivateUser(@Model.User_List[i].UserId)">Deactivate User</div>
+                                    </td>
+
+                                </tr>
+                                SRNOAct++;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <tr class="table-danger">
+                            <td colspan="6" style="text-align: center">No Data Exists</td>
+                        </tr>
+                    }
+                </table>
+            }
+        </div>
+    </div>
+</fieldset>
+
+
+<input type="hidden" id="hiddenUserId" />
+<input type="hidden" id="msg" />
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background-color: #fefefe; margin: auto; padding: 20px; border: 1px solid #888; width: auto;">
+            <div class="modal-header alert alert-danger">
+                <h4 class="modal-title" id="myModalLabel">Infromation Dialog</h4>
+            </div>
+            <div class="modal-body">
+                <p class="success-message" id="Bodymsg"> </p>
+            </div>
+            <div class="modal-footer">
+                <button id="btn_Confirm" class="btn btn-info" onclick="ConfirmAction()">Confirm</button>                
+                <button class="btn btn-dark" onclick="$('#myModal').modal('hide'); window.location.href = window.location.href;">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script type="text/javascript">
+
+    function Close() { $('#myModal').modal('hide'); };
+
+    function ConfirmAction()
+    {
+        var User_Id = $("#hiddenUserId").val();
+        var msg = $("#msg").val();
+        if (User_Id != '') {
+            $.ajax({
+                url: '/JSONCalls/ConfirmUserAction',
+                data: { UserId: User_Id, ActionOnUser: msg },
+                type: 'get',
+                contentType:'json',
+                success: function (data) {
+                  if (data == "Activated")
+                    {
+                        $('#btn_Confirm').remove();
+                      $('.success-message').add().html('User Activated successfully');
+                        $('#row_' + UserId).remove();
+                    }
+                    if (data == "Deactivated")
+                    {
+                        $('#btn_Confirm').remove();
+                        $('.success-message').add().html('User Deactivated successfully');
+                        $('#row_' + UserId).remove();
+                    }
+                    else if (data == "Record Linked") {
+                        $('#btn_Confirm').remove();
+                        $('.success-message').add().html('User not De-Activated as it linked with Some Record.');
+                        $('#row_' + UserId).remove();
+                    }
+                    else if (data == "Failed") {
+                        $('#btn_Confirm').remove();
+                        $('.success-message').add().html('User ' + msg+ ' Failed.');
+                        $('#row_' + UserId).remove();
+                    }
+                    //if (data)
+                    //{
+                    //    if ($('.modal-header').hasClass('alert-danger'))
+                    //    {
+                    //        $('.modal-header').removeClass('alert-danger').addClass('alert-success');
+                    //        $('.btn-info').css('display', 'none');
+                    //        $('.btn-dark').css('display', 'none');
+                    //    }
+                    //    $('.success-message').html('Action taken Successfully please refresh the page by pressing F5 key.');
+                    //}
+                }, error: function (err)
+                {
+                    $('#btn_Confirm').remove();
+                    $('#row_' + UserId).remove();
+                    $('.success-message').add().html(err.statusText);
+                }
+            });
+        } else {          
+            $(".dk_header").add().html("Message");
+            $('#btn_Confirm').remove();
+            $(".modal-body").add().html("!User Not Deleted");
+        }
+    };
+
+    var DeactivateUser = function (UserId)
+    {
+        $("#hiddenUserId").val(UserId);
+        $("#msg").val("Deactivation");
+        $('#myModal').modal('show');
+        $('.success-message').html('Are you sure for Deactivation Process?');
+    }
+    var ActivateUser = function (UserId)
+    {
+        $("#hiddenUserId").val(UserId);
+        $("#msg").val("Activation");
+        $('#myModal').modal('show');
+        $('.success-message').html('Are you sure for Activation Process?');
+    }
+
+</script>

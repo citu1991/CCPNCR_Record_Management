@@ -1,0 +1,214 @@
+﻿@model CCPNCR_Record_Management.Models.FileType
+@{
+    int SrNo = 1;
+}
+<style>
+         .dk_header
+ {
+    color: white;
+    background-color:dodgerblue;
+    text-align: center;
+    padding: 15px 0px;
+}
+</style>
+
+<h2 style="text-align:center">List of File Types</h2>
+<fieldset class="col-lg-12">
+    <div class="form-group">
+        <div class="table-responsive">
+            @if (Model != null)
+            {
+
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>
+                                Sr. No
+                            </th>
+                            <th>
+                                File Type
+                            </th>
+                            <th colspan="2">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    @if (Model.ListFileType.Count > 0)
+                    {
+                        for (int i = 0; i < Model.ListFileType.Count; i++)
+                        {
+
+                            <tr>
+                                <td>
+                                    @Html.HiddenFor(modelItem => Model.ListFileType[i].FileTypeId, new { @class = "FileTypeId" })
+                                    @SrNo.
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model.ListFileType[i].FileTypeName, new { @class = "FileType" })
+                                </td>
+                                <td>
+                                    <div class="btn btn-success" onclick="EditFileType(@Model.ListFileType[i].FileTypeId)">Edit</div>
+                                </td>
+                                <td>
+                                    <div class="btn btn-danger" onclick="DeleteFileType(@Model.ListFileType[i].FileTypeId)">Delete</div>
+                                </td>
+                            </tr>
+                            SrNo++;
+                        }
+                    }
+                    else
+                    {
+                        <tr class="table-danger">
+                            <td colspan="4" style="text-align: center">No Data Exists</td>
+                        </tr>
+                    }
+                </table>
+
+            }
+        </div>
+    </div>
+</fieldset>
+
+
+<input type="hidden" id="hiddenFileTypeId" />
+<div class="container" >
+
+    <div class="modal" id="myModal" tabindex="1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">               
+                <div class="dk_header">Message</div>
+                <div class="modal-body">
+                    <p class="success-message">Are you sure you wish to delete this record ? </p>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn_delete" class="btn btn-success" onclick="ConfirmDelete()">Confirm Delete</button>
+                    <button class="btn btn-dark" data-dismiss="modal" onclick="$('#myModal').modal('hide'); window.location.href = window.location.href;">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="myEditModal" style="padding-top:100px" tabindex="1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="dk_header">Update File Type</div>
+                <div class="modal-body" id="editModalBody">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" id="btnConfirm" onclick="ConfirmUpdate()">Confirm Update</button>
+                    <button class="btn btn-dark" onclick="$('#myEditModal').modal('hide'); window.location.href = window.location.href;">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+@*<script src="~/Scripts/bootstrap.bundle.min.js"></script>*@
+
+<script>
+
+    var DeleteFileType = function (FileTypeId)
+    {
+        $("#hiddenFileTypeId").val(FileTypeId);
+        $('#myModal').modal('show');
+    };
+
+    function ConfirmDelete() {
+        var filetypeid = $("#hiddenFileTypeId").val();
+        if (filetypeid != '' && filetypeid != null)
+        {
+            debugger;
+            $.ajax({
+                url: '/JSONCalls/DeleteFileType',
+                data: { FileTypeId: filetypeid },
+                type: 'POST',
+                success: function (data) {
+                    if (data == "Success")
+                    {
+                        $('#btn_delete').remove();
+                        $('.success-message').add().html('Record deleted successfully');
+                        $('#row_' + FileTypeId).remove();
+                       
+
+                    }
+                    else if (data == "Record Linked") {
+                        $('#btn_delete').remove();
+                        $('.success-message').add().html('File Type Not Deleted as it linked with Some Record.');
+                        $('#row_' + FileTypeId).remove();
+
+
+                    }
+                    else if (data == "Deletion Failed") {
+                        $('#btn_delete').remove();
+                        $('.success-message').add().html('!Record Not Deleted.');
+                        $('#row_' + FileTypeId).remove();
+                    }
+                }, error: function (err)
+                {
+                    $('#btn_delete').remove();
+                    $('#row_' + FileTypeId).remove();
+                    $('.success-message').add().html(err.statusText);
+                   
+                }
+            });
+        } else {          
+            $(".dk_header").add().html("Message");
+            $("#btn_delete").remove();
+            $(".modal-body").add().html("!Record Not Deleted");
+
+        }
+    };
+
+    var EditFileType = function (FileTypeId) {
+       // $("#hiddenFileTypeId").val(FileTypeId);
+        var url = '/FileType/EditFileType?FileTypeId=' + FileTypeId;
+        $('#editModalBody').load(url, function () {
+            $('#myEditModal').modal('show');
+        })
+    };
+
+    function ConfirmUpdate() {
+        var filetypeid = $(".File_TypeId").val();
+        var filetype = $(".File_Type").val();
+        if ((filetypeid != "" || filetypeid != null) && (filetype != "" || filetype != null)) {
+            $.ajax({
+                url: '/JSONCalls/UpdateFileType',
+                data: { FileTypeId: filetypeid, FileType: filetype},
+                type: 'POST',
+                success: function (data)
+                {
+
+                    if (data == "Success") {
+                   
+                        $(".modal-body").add().html("File Type Updated Successfully.");
+                        $(".dk_header").add().html("Message");
+                        $("#btnConfirm").remove();                       
+                    }
+                    else if (data =="Duplicate")
+                    {
+                        $(".modal-body").add().html("File Type Already Exists");
+                        $(".dk_header").add().html("Message");
+                        $("#btnConfirm").remove(); 
+                    }
+                    else {
+                        $(".dk_header").add().html("Message");
+                        $("#btnConfirm").remove(); 
+                        $(".modal-body").add().html("!Record Not Updated");
+                        //setTimeout(function () {
+                        //    $('#myModal').modal('hide'); window.location.href = window.location.href;
+                        //}, 2000);
+                    }
+                }
+            });
+        } else
+        {           
+            $(".dk_header").add().html("Message");
+            $("#btnConfirm").remove();
+            $(".modal-body").add().html("!Record Not Updated");
+
+        }
+    };
+
+</script>

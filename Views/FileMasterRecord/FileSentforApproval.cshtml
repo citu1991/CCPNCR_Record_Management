@@ -1,0 +1,163 @@
+﻿@using PagedList.Mvc;
+@model PagedList.IPagedList<CCPNCR_Record_Management.Models.FileRecord>
+
+@{
+    int SrNo = 0;
+    ViewBag.Title = "FileSentforApproval";
+    if (Session["UserRoleType"].ToString() == "Admin")
+    {
+        Layout = "~/Views/Shared/MasterLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/UsersLayout.cshtml";
+    }
+}
+<h3 style="text-align:center">List of Files Sent for User's Approval</h3>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+    td {
+        border: 1px solid black;
+        text-align: center;
+    }
+
+    tr {
+        text-align: center;
+    }
+</style>
+
+<fieldset class="col-lg-12">
+    <div class="form-group">
+        <div style="float:right">
+            <button type="submit" value="ExportToExcel" onclick="ExporttoExcel('EXCELAllFILESENTFORAPPROVAL')" name="action" style="font-size:10px;width:100px;margin-bottom:10px">
+                Export To Excel
+            </button>
+            <button type="submit" value="ExportToPdf" onclick="ExporttoPdf('PDFAllFILEENTFORAPPROVAL')" name="action" style="font-size:10px;width:100px;margin-bottom:10px">
+                Export To PDF
+            </button>
+        </div>
+        <div class="table table-responsive">
+
+            @if (Model != null)
+            {
+                <table class="table table-sm table-responsive" style="font-size:small">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>
+                                Sr. No
+                            </th>
+                            <th>
+                                Approval Sent to
+                            </th>
+                            <th>
+                                Approval Sent Date
+                            </th>
+                            <th>
+                                File No-Type
+                            </th>
+                            <th>
+                                File Subject
+                            </th>
+                            <th>
+                                NP First Page
+                            </th>
+                            <th>
+                                NP Last Page
+                            </th>
+                            <th>
+                                CP First Page
+                            </th>
+                            <th>
+                                CP Last Page
+                            </th>
+                            <th>
+                                Date on Last NP
+                            </th>
+                            <th>
+                                Last Sign
+                            </th>
+                            @*<th colspan="2">
+                                    Action
+                                </th>*@
+                        </tr>
+                    </thead>
+                    @if (Model.Count > 0)
+                    {
+                        for (int i = 0; i < Model.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.HiddenFor(modelItem => Model[i].FileRecordId)
+                                    @(SrNo + ((Model.PageNumber - 1) * Model.PageSize) + 1).
+                                </td>
+                                <td style="background-color:#ee4e4e;color:white">
+                                    @Html.DisplayFor(modelItem => Model[i].UserName)
+                                </td>
+                                <td style="background-color:#ee4e4e;color:white">
+                                    @Html.DisplayFor(modelItem => Model[i].ApprovalSentDate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model[i].FileRecordNumber)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model[i].FileRecordName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model[i].NPStart)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model[i].NPEnd)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model[i].CPStart)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model[i].CPEnd)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model[i].DateonlastNP.Date.Day)/@Html.DisplayFor(modelItem => Model[i].DateonlastNP.Date.Month)/@Html.DisplayFor(modelItem => Model[i].DateonlastNP.Date.Year)
+
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model[i].SignedByonlastNP)
+                                </td>
+                                @*<td>
+                                        <div class="btn btn-success" onclick="EditFileRecord(@Model.List_File_Record[i].FileRecordId)">Edit</div>
+                                    </td>
+                                    <td>
+                                        <div class="btn btn-danger" onclick="DeleteFileRecord(@Model.List_File_Record[i].FileRecordId)">Delete</div>
+                                    </td>*@
+                            </tr>
+                            SrNo++;
+                        }
+                    }
+                    else
+                    {
+                        <tr class="table-danger">
+                            <td colspan="11" style="text-align: center">No Record Found</td>
+                        </tr>
+                    }
+                </table>
+
+            }
+
+            <nav>
+                <ul class="pagination">
+                    Showing Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+                    @Html.PagedListPager(Model, page => Url.Action("FileSentforApproval", new { page }))
+                </ul>
+            </nav>
+        </div>
+    </div>
+</fieldset>
+
+
+<script>
+    var ExporttoExcel = function (ExportTypeMessage) {
+        document.location = '/FileMasterRecord/ExporttoExcel?ExportTypeMessage=' + ExportTypeMessage;
+    };
+
+    var ExporttoPdf = function (ExportTypeMessage) {
+        document.location = '/FileMasterRecord/ExporttoPdf?ExportTypeMessage=' + ExportTypeMessage;
+    };
+</script>

@@ -1,0 +1,172 @@
+﻿
+
+@model CCPNCR_Record_Management.Models.BackupModels
+@{
+    ViewBag.Title = "Create Database Backup";
+    if (Session["UserRoleType"].ToString() == "Admin")
+    {
+        Layout = "~/Views/Shared/MasterLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/UsersLayout.cshtml";
+    }
+
+}
+
+<legend style="text-align: center;background-color: #6abdc8;height:65px;padding-top:15px">
+    Database Backup's Details<br />
+</legend>
+@if (TempData["SuccessBk"] != null)
+{
+    <div class="alert alert-success alert-dismissible" style="background-color:#92ce92;color:white">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>Success!</strong> @TempData["SuccessBk"].
+    </div>
+}
+@if (TempData["ErrorBk"] != null)
+{
+    <div class="alert alert-danger alert-dismissible" style="background-color:#f9b8b8;color:Black">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close" style="color:black">&times;</a>
+        <strong>Error !</strong> @TempData["ErrorBk"].
+    </div>
+}
+@using (Html.BeginForm("CreateBackup", "DBBackup", FormMethod.Post, null))
+{
+    if (Model.listBackUp.Count > 0)
+    {
+
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true)
+            @foreach (var item in Model.listBackUp)
+            {
+                <fieldset class="col-lg-12" style="background-color: #b9ffc129;">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form>
+                                <div class="form-group">
+                                    <div class="form-row">
+                                        <div class="col-md-12">
+                                            <div class="col-md-12">
+                                                <div class="form-label-group">
+                                                    <label class="control-label" style="font-size:15px">Last BackUp Created on:&nbsp;&nbsp;&nbsp;&nbsp;  </label><span style="color:green">@Html.DisplayFor(model => item.Createdate)</span>
+                                                </div>
+                                                <br />
+                                            </div>
+
+                                            <div class="col-md-12">
+                                                <div class="form-label-group">
+                                                    <label class="control-label" style="font-size:15px">Last BackUp File Name:&nbsp;&nbsp;&nbsp;&nbsp;   </label><span style="color:green">@Html.DisplayFor(model => item.BackUpFileName)</span>
+                                                </div>
+                                                <br />
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="form-row">
+                                        <div class="col-md-12">
+                                            <br />
+                                            <div class="col-md-3">
+                                                <div class="form-label-group">
+
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-label-group">
+                                                    <input type="submit" class="btn btn-primary btn-block" name="create" value="Create New Backup" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-label-group">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-label-group">
+
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </form>
+                        </div>
+                    </div>
+                </fieldset>
+            }
+        </div>
+
+
+    }
+    else
+    {
+
+        <fieldset class="col-lg-12" style="background-color: #b9ffc129;padding:50px">
+            <div class="row">
+                <div class="col-lg-12">
+                    <form>
+                        <div class="form-group">
+                            <div class="form-row">
+                                <div class="col-md-12">
+                                    <div class="col-md-12">
+                                        <div class="form-label-group">
+                                            <label class="control-label" style="font-size:15px">Last BackUp Created on:&nbsp;&nbsp;&nbsp;&nbsp;</label><span style="color:red">Backup Not Taken Yet.</span>
+                                        </div>
+                                        <br />
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-label-group">
+                                            <label class="control-label" style="font-size:15px">Last BackUp File Name:&nbsp;&nbsp;&nbsp;&nbsp;</label><span style="color:red">Backup Not Taken Yet.</span>
+                                        </div>
+                                        <br />
+                                    </div>
+                                  
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-row">
+                                <div class="col-md-12">
+                                    <br />
+                                    <div class="col-md-3">
+                                        <div class="form-label-group">
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-label-group">
+                                            <input type="submit" class="btn btn-primary btn-block" name="create" value="Create New Backup" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-label-group">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-label-group">
+
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </form>
+                </div>
+            </div>
+        </fieldset>
+    }
+}

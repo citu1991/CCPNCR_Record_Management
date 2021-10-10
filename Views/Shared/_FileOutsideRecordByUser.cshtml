@@ -1,0 +1,228 @@
+﻿@using PagedList.Mvc;
+@model PagedList.IPagedList<CCPNCR_Record_Management.Models.FileRecord>
+@{
+    int SrNo = 0;
+}
+
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+    td {
+        border: 1px solid black;
+        text-align: center;
+    }
+
+    tr {
+        text-align: center;
+    }
+
+    .dk_header {
+        height: 50px;
+        margin: 10px;
+        padding-top: 10px;
+        text-align: center;
+        background-color: black;
+        color: white;
+        font: bold;
+    }
+</style>
+<fieldset class="col-lg-12" style="padding-bottom:50px">
+    <div class="form-group">
+        <div style="float:right">
+            <button type="submit" value="ExportToExcel" onclick="ExporttoExcel('EXCELAllOUTSIDEFILE')" name="action" style="font-size:10px;width:100px;margin-bottom:10px">
+                Export To Excel
+            </button>
+            <button type="submit" value="ExportToPdf" onclick="ExporttoPdf('PDFAllOUTSIDEFILE')" name="action" style="font-size:10px;width:100px;margin-bottom:10px">
+                Export To PDF
+            </button>
+
+            @*<input type="button" class="btn-sm btn-success" onclick="ExportPdf('PDF')" style="font-size:10px;width:100px" value="Export to PDF" />
+                <input type="button" class="btn-sm btn-success" onclick="ExportExl('Excel')" style="font-size:10px;width:100px;margin-bottom:10px" value="Export to Excel" />*@
+        </div>
+        <div class="table table-responsive">
+
+            @if (Model != null)
+            {
+                <table class=" table table-responsive table-sm" style="font-size:small">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>
+                                Sr. No
+                            </th>
+                            <th>
+                                File No-Vol
+                            </th>
+                            <th>
+                                File Subject
+                            </th>
+                            <th>
+                                NP First Page
+                            </th>
+                            <th>
+                                NP Last Page
+                            </th>
+                            <th>
+                                CP First Page
+                            </th>
+                            <th>
+                                CP Last Page
+                            </th>
+                            <th>
+                                Date on Last NP
+                            </th>
+                            <th>
+                                Last Sign by
+                            </th>
+                            <th colspan="2">
+                                File Called By User on Dated
+                            </th>
+                            <th>
+                                Link
+                            </th>
+
+                        </tr>
+                    </thead>
+                    @if (Model.Count > 0)
+                    {
+                        for (int i = 0; i < Model.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.HiddenFor(modelItem => Model[i].FileIn_OutRecordId)
+                                    @Html.HiddenFor(modelItem => Model[i].FileRecordId)
+                                    @(SrNo + ((Model.PageNumber - 1) * Model.PageSize) + 1).
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model[i].FileRecordNumber)-@Html.DisplayFor(modelItem => Model[i].FileVolumeName)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model[i].FileRecordName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model[i].NPStart)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model[i].NPEnd)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model[i].CPStart)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model[i].CPEnd)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model[i].DateonlastNP.Date.Day)/@Html.DisplayFor(modelItem => Model[i].DateonlastNP.Date.Month)/@Html.DisplayFor(modelItem => Model[i].DateonlastNP.Date.Year)
+
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model[i].SignedByonlastNP)
+                                </td>
+                                <td style="background-color:#ee4e4e;color:white">
+                                    @Html.DisplayFor(modelItem => Model[i].FileCalledByUser)
+                                </td>
+
+                                <td style="background-color:#ee4e4e;color:white">
+                                    @Html.DisplayFor(modelItem => Model[i].FileCalledDate)
+                                </td>
+                                <td>
+                                    <div class="btn-sm btn-info" onclick="ReturnFileRecord(@Model[i].FileRecordId,@Model[i].FileIn_OutRecordId)">Return to Record</div>
+                                </td>
+                            </tr>
+                            SrNo++;
+                        }
+                    }
+                    else
+                    {
+                        <tr class="table-danger">
+                            <td colspan="11" style="text-align: center">No Files Inside Record.</td>
+                        </tr>
+                    }
+                </table>
+
+            }
+        <nav style="text-align:center;">
+            <ul class="pagination">
+                Showing Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount [ Total Record Count- @Model.TotalItemCount ]
+
+                @Html.PagedListPager(Model, page => Url.Action("FileOutsideRecord", new { page }))
+            </ul>
+        </nav>
+        </div>
+    </div>
+</fieldset>
+
+
+
+<input type="hidden" id="hiddenFileIn_OutRecordId" />
+<input type="hidden" id="hiddenFileRecordId" />
+<div class="container">
+
+
+    <div class="modal" id="myReturnModal" style="padding-top:100px" tabindex="1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="dk_header">Return Remarks</div>
+                <div class="modal-body" id="returnModalBody">
+                    <p class="success-message"><p>
+                        <textarea id="returnremarks" rows="3" cols="55" placeholder="Enter your File's Return Remarks."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" id="btnConfirm" onclick="ConfirmApproval()">Confirm Return</button>
+                    <button class="btn btn-dark" onclick="$('#myReturnModal').modal('hide'); window.location.href = window.location.href;">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script type="text/javascript">
+
+    var ReturnFileRecord = function (FileRecordId, FileIn_OutRecordId) {
+        $("#hiddenFileRecordId").val(FileRecordId);
+        $("#hiddenFileIn_OutRecordId").val(FileIn_OutRecordId);
+        $('#myReturnModal').modal('show');
+    };
+
+    function ConfirmApproval() {
+        var filein_outrecordid = $("#hiddenFileIn_OutRecordId").val();
+        var filerecordid = $("#hiddenFileRecordId").val();
+        var remarks = $('#returnremarks').val();
+        if (filein_outrecordid != '' && filein_outrecordid != null && filerecordid != '' && filerecordid != null && remarks != "" && remarks != null) {
+            $.ajax({
+                url: '/JSONCalls/FileReturn',
+                data: { FileIn_OutRecordId: filein_outrecordid, FileRecordId: filerecordid, ReturnRemarks: remarks },
+                type: 'POST',
+                success: function (data) {
+                    if (data) {
+                        $('#btnConfirm').remove();
+                        $('#returnremarks').remove();
+                        $('.success-message').add().html('File Return Successfully.');
+                        $('#row_' + FileIn_OutRecordId).remove();
+                    }
+                }, error: function (err) {
+                    $('#btnConfirm').remove();
+                    $('#row_' + FileIn_OutRecordId).remove();
+                    $('#returnremarks').remove();
+                    $('.success-message').add().html(err.statusText);
+                }
+            });
+        } else {
+            $(".dk_header").add().html("Message");
+            $("#btnConfirm").remove();
+            $('#returnremarks').remove();
+            $(".modal-body").add().html("!File Not Return");
+        }
+    };
+
+
+
+    var ExporttoExcel = function (ExportTypeMessage) {
+        document.location = '/FileMasterRecord/ExporttoExcel?ExportTypeMessage=' + ExportTypeMessage;
+    };
+
+    var ExporttoPdf = function (ExportTypeMessage) {
+        document.location = '/FileMasterRecord/ExporttoPdf?ExportTypeMessage=' + ExportTypeMessage;
+    };
+</script>

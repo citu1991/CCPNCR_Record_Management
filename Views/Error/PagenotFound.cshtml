@@ -1,0 +1,24 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+   
+    <link href="~/DesignA/css/style.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width" />
+    <title>Page Not Found</title>
+</head>
+<body>
+    @using(Html.BeginForm("Logout", "Admin", FormMethod.Post, null))
+    {
+    <div style="text-align:center;padding-top:10%;">
+        <h2>The page you are looking for is not present.</h2>
+        <input type="submit" value="Back to Login Page" />
+    </div>
+    }
+</body>
+</html>

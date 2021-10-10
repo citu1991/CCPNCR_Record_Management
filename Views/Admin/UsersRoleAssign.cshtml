@@ -1,0 +1,249 @@
+﻿@model CCPNCR_Record_Management.Models.SignUpRole
+@{
+
+    int SrNoList = 1;
+    ViewBag.Title = "UsersRoleAssign";
+    if (Session["UserRoleType"].ToString() == "Admin")
+    {
+        Layout = "~/Views/Shared/MasterLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/UsersLayout.cshtml";
+    }
+}
+
+<style>
+
+   .dk_header {
+        height: 50px;
+        margin: 10px;
+        padding-top: 10px;
+        text-align: center;
+        background-color: black;
+        color: white;
+        font: bold;
+    }
+</style>
+
+@if (@ViewBag.message == "Success")
+{
+    <div class="alert alert-success alert fade show" role="alert">
+        <strong>Success !</strong>  Role Assigned Successfully.
+    </div>
+}
+else if (@ViewBag.message == "Duplicate RK")
+{
+    <div class="alert alert-danger alert fade show" role="alert">
+        <strong>Duplicate !</strong>  Record Keeper already Assigned.
+    </div>
+}
+else if (@ViewBag.message == "Failed")
+{
+    <div class="alert alert-danger alert fade show" role="alert">
+        <strong>Failed !</strong>  There is some problem occured.
+    </div>
+}
+else if (@ViewBag.message == "Alert")
+{
+    <div class="alert alert-danger alert fade show" role="alert">
+        <strong>Failed !</strong>  User or Role Not selected or All Users already assigned Role.
+    </div>
+}
+<h2 style="text-align:center">Assign Roles to Active Users</h2>
+@using (Html.BeginForm("UsersRoleAssign", "Admin", FormMethod.Post, null))
+{
+    <fieldset class="col-lg-12">
+        <div class="form-group">
+            <div class="table-responsive">
+                @if (Model != null)
+                {
+
+                    <table class="table table-bordered">
+                        <thead class="table-dark">
+                            <tr>
+
+                                <th>
+                                    Select Username
+                                </th>
+                                <th>
+                                    Select Role
+                                </th>
+                                <th>
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        @if (Model.Signups != null)
+                        {
+                            <tr>
+
+                                <td>
+                                    @Html.DropDownListFor(m => m.UserId, new SelectList(Model.Signups, "UserId", "UserName"), "--Select User--", new { @class = "form-control" })
+                                </td>
+
+                                <td>
+                                    @Html.DropDownListFor(m => m.RoleId, new SelectList(Model.Roles, "RoleId", "RoleName"), "--Select Role--", new { @class = "form-control" })
+                                </td>
+
+                                <td>
+                                    <input type="submit" value="Assign Role" class="btn btn-success" />
+                                </td>
+
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+
+                                <td>
+                                    <span style="color:orangered">Role Assigned to all Users,you can Edit the Role from Below mentioned List.</span>
+                                </td>
+
+                                <td>
+                                    @Html.DropDownListFor(m => m.RoleId, new SelectList(Model.Roles, "RoleId", "RoleName"), "--Select Role--", new { @class = "form-control" })
+                                </td>
+
+                                <td>
+                                    <input type="submit" value="Assign Role" class="btn btn-success" />
+                                </td>
+
+                            </tr>
+                        }
+
+                    </table>
+
+                }
+            </div>
+        </div>
+
+        <br />
+        <h2 style="text-align:center"> Active Users List with Role</h2>
+        <div class="form-group">
+            <div class="table-responsive">
+                @if (Model != null)
+                {
+
+                    <table class="table table-bordered">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>
+                                    Sr. No
+                                </th>
+                                <th>
+                                    Username
+                                </th>
+                                <th>
+                                    Email Id
+                                </th>
+                                <th>
+                                    Assigned Role
+                                </th>
+                                <th>
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        @if (Model.SignUps_Roles != null)
+                        {
+                            for (int i = 0; i < Model.SignUps_Roles.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.HiddenFor(modelItem => Model.SignUps_Roles[i].UserId, new { @class = "UserId" })
+                                        @SrNoList.
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.SignUps_Roles[i].UserName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.SignUps_Roles[i].UserEmail)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.SignUps_Roles[i].RoleName)
+                                    </td>
+                                    <td>
+                                        <div class="btn btn-primary" onclick="EditRole(@Model.SignUps_Roles[i].UserId)">Edit Role</div>
+                                        @*<input type="submit" value="Edit Role" class="btn btn-primary" />*@
+                                    </td>
+
+                                </tr>
+                                SrNoList++;
+
+                            }
+                        }
+                        else
+                        {
+                            <tr class="table-danger">
+                                <td colspan="5" style="text-align: center">No Data Exists</td>
+                            </tr>
+                        }
+                    </table>
+
+                }
+            </div>
+        </div>
+    </fieldset>
+}
+
+<input type="hidden" id="hiddenRoleId" />
+<input type="hidden" id="hiddenUserId" />
+<div class="container">
+
+     <div class="modal" id="editRoleModal" tabindex="1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="dk_header">Edit Role <button style="float:right;padding:4px;margin-right:10px" class="btn-sm btn-danger" onclick="$('#editRoleModal').modal('hide'); window.location.href = window.location.href;">X</button></div>
+                <div class="modal-body" id="editRoleBody">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" onclick="SubmitEditRole()">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+
+    var EditRole = function (UserId) {
+        debugger;
+        $('#hiddenUserId').val(UserId);
+        var url = '/Admin/EditRole?UserId=' + UserId;
+        $('#editRoleBody').load(url, function () {
+            $('#editRoleModal').modal('show');
+        })
+    };
+    function SubmitEditRole() {
+        debugger;
+        var UserId = $('#hiddenUserId').val();
+        var RoleId = $('.Role_Id').val();
+        alert(UserId, RoleId);
+    };
+
+    //var EditRole = function (UserId) {
+    //    $.ajax({
+    //        url: 'Admin/EditRole',
+    //        type: 'get',
+    //        data: { UserId: UserId },
+    //        success: function (data) {
+    //            $('#modalbodylaststatus').html(data)
+    //            $('#filestatusmodal').modal('show');
+
+    //        }, error: function (xhr, status, error) {
+    //            $('#myformdata').show();
+    //            $('#filestatusmodal').modal('show');
+    //            alert("Error: " + error.Message());
+    //        }
+    //    });
+
+
+
+        //var url = '/FileMasterRecord/GetFileLastStatus?FileRecordId=' + filerecordid + '&Message=' + msg + '&page=' + page;
+        //$('#modalbodylaststatus').load(url, function () {
+        //  $('#filestatusmodal').modal('show');
+        //})
+   // };
+</script>

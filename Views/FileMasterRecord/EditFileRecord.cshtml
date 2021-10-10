@@ -1,0 +1,104 @@
+﻿@model CCPNCR_Record_Management.Models.FileMasterRecordVM
+@{
+    ViewBag.Title = "Edit File Record";
+    if (Session["UserRoleType"].ToString() == "Admin")
+    {
+        Layout = "~/Views/Shared/MasterLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/UsersLayout.cshtml";
+    }
+}
+
+
+<h2 style="text-align:center">Edit File Record</h2>
+<hr />
+@using (Html.BeginForm("UpdateFileRecord", "FileMasterRecord", FormMethod.Post, null))
+{
+    if (Model.LIST_FileRecord.Count > 0)
+    {
+        foreach (var item in Model.LIST_FileRecord)
+        {
+            <table class="table table-borderless table-responsive">
+
+                <tr>
+                    <td colspan="3">
+                        <label style="margin-bottom:5px">File Subject (Minimum 10 Characters) : </label>
+                        @Html.HiddenFor(m => item.FileRecordId)
+                        @Html.TextAreaFor(m => item.FileRecordName, new { @class = "form-control", @style = "border: 1px solid black", @min = 10 })
+                        @Html.ValidationMessageFor(model => model.FileRecordName, " ", new { @class = "text-danger" })
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="2">
+                        <label style="margin-bottom:5px">File Type : </label>
+                        @Html.DropDownListFor(m => item.FileTypeId, new SelectList(Model.LIST_FileType, "FileTypeId", "FileTypeName", item.FileTypeId), "--Select File Type--", new { @class = "form-control", @style = "border: 1px solid black" })
+
+                    </td>
+                    <td>
+                        <label style="margin-bottom:5px">Volume : </label>
+                        @Html.DropDownListFor(m => item.FileVolumeId, new SelectList(Model.LIST_FileVolume, "FileVolumeId", "FileVolumeName", item.FileVolumeId), "--Select Volume--", new { @class = "form-control", @style = "border: 1px solid black" })
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <label style="margin-bottom:5px">File No : </label><br />
+                        @Html.EditorFor(m => item.FileRecordNumber, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.FileRecordNumber, " ", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        <label style="margin-bottom:5px">First Noting Page No : </label><br />
+                        @Html.EditorFor(m => item.NPStart, new { @class = "form-control", @type = "Number", @min = 0 })
+                        @Html.ValidationMessageFor(model => model.NPStart, " ", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        <label style="margin-bottom:5px">Last Noting Page No : </label><br />
+                        @Html.EditorFor(m => item.NPEnd, new { @class = "form-control", @type = "Number", @min = 0 })
+                        @Html.ValidationMessageFor(model => model.NPEnd, " ", new { @class = "text-danger" })
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <label style="margin-bottom:5px">First Chain Page No : </label><br />
+                        @Html.EditorFor(m => item.CPStart, new { @class = "form-control", @type = "Number", @min = 0 })
+                        @Html.ValidationMessageFor(model => model.CPStart, " ", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        <label style="margin-bottom:5px">Last Chain Page No : </label><br />
+                        @Html.EditorFor(m => item.CPEnd, new { @class = "form-control", @type = "Number", @min = 0 })
+                        @Html.ValidationMessageFor(model => model.CPEnd, " ", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        <label style="margin-bottom:5px">Last Noting Signed By : </label><br />
+                        @Html.EditorFor(m => item.SignedByonlastNP, new { @class = "form-control", @type = "text" })
+                        @Html.ValidationMessageFor(model => model.SignedByonlastNP, " ", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>
+                        <label style="margin-bottom:5px">Last Date on Noting (DD-MM-YYYY)  : </label><br />
+                        @Html.EditorFor(m => item.DateonlastNP, new { @class = "form-control", @readonly = "true" })
+                        @Html.ValidationMessageFor(model => model.DateonlastNP, " ", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        <br />
+                        <input type="submit" class="btn btn-primary" value="Update Record" style="margin-left:100px" />
+                    </td>
+                    <td>
+                        <br />
+                        <input type="submit" class="btn btn-dark" name="resetButton" value="Cancel" />
+                    </td>
+                </tr>
+            </table>
+        }
+    }
+}
+
+
+
+

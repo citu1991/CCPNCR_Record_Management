@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>CCP(NCR)-RMS</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Jost:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+
+   
+
+    <link href="../DesignA/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../DesignA/vendor/aos/aos.css" rel="stylesheet">
+    <link href="../DesignA/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="../DesignA/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <link href="../DesignA/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="../DesignA/vendor/remixicon/remixicon.css" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+</head>
+
+<body>
+
+    <!-- ======= Header ======= -->
+    <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+
+            <h1 class="logo me-auto"><a href="@Url.Action(" AdminDashBoard","Admin")">Chief Coordinator Planner(NCR) Record Management System</a></h1>
+            <!-- Uncomment below if you prefer to use an image logo -->
+            <!-- <a href="index.html" class="logo me-auto"><img src="DesignA/img/logo.png" alt="" class="img-fluid"></a>-->
+
+            <nav id="navbar" class="navbar">
+                <ul>
+                    <li><a class="nav-link scrollto active" href="@Url.Action(" AdminDashBoard","Admin")">Dashboard</a></li>
+                    <li><a class="nav-link scrollto " href="#hero">Notifications (@ViewBag.NotificationCount)</a></li>
+                    <li class="dropdown">
+                        <a href="#"><span>Masters</span> <i class="bi bi-chevron-down"></i></a>
+                        <ul>
+                            <li class="dropdown">
+                                <a href="#"><span>Users Master</span> <i class="bi bi-chevron-right"></i></a>
+                                <ul>
+                                    <li><a href="@Url.Action(" UsersActive_Inactive","Admin")">User Active-Inactive</a></li>
+                                    <li><a href="@Url.Action(" UsersRoleAssign","Admin")">User Role Assign</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#"><span>Files Master</span> <i class="bi bi-chevron-right"></i></a>
+                                <ul>
+                                    <li><a href="@Url.Action(" InsertFileType","FileType")">File Type</a></li>
+                                    <li><a href="@Url.Action(" InsertFileVolume","FileVolume")">File Volume</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="@Url.Action(" InsertFileRecord","FileMasterRecord")">Add File Record</a></li>
+                            <li><a href="@Url.Action(" Load_In_out","FileMasterRecord")">File In-Out Status</a></li>
+                            <li><a href="@Url.Action(" FileSentforApproval","FileMasterRecord")">File Sent for Approval</a></li>
+                            <li class="dropdown">
+                                <a href="#"><span>Reports Master</span> <i class="bi bi-chevron-right"></i></a>
+                                <ul>
+                                    <li><a href="@Url.Action(" GetAllFileRecord","FileMasterRecord")">All File Record</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="getstarted dropdown">
+                        <a href="#"><span>Welcome @Session["UserFullName"] (@Session["UserRoleType"])</span><i class="bi bi-chevron-down"></i></a>
+                        <ul>
+                            <li><a href="@Url.Action(" GetProfile","Admin")">Profile</a></li>
+                            <li><a href="@Url.Action(" UpdatePassword","Admin")">Change Password</a></li>
+                            <li><a href="@Url.Action(" Logout","Admin")">Logout</a></li>
+                            <li><a href="@Url.Action(" DbBackup","Admin")">Database Backup</a></li>
+                            <li><a href="~/Test.html">Database Backup</a></li>
+
+                        </ul>
+                    </li>
+                </ul>
+                <i class="bi bi-list mobile-nav-toggle"></i>
+            </nav><!-- .navbar -->
+
+        </div>
+    </header><!-- End Header -->
+    <!-- ======= Hero Section ======= -->
+
+
+
+
+
+  
+
+
+    <!-- ======= Footer ======= -->
+    <!--<footer id="footer">
+        <div class="footer-bottom">
+            <div>
+                Design and Developed By <strong><span>Dinesh Kumar (Programmer)</span></strong>
+                <br />
+                Department Web Link <a href="https://tcpharyana.gov.in/" target="_blank">TCP Haryana</a>
+            </div>
+        </div>
+    </footer>-->
+    <!-- End Footer -->
+
+    <div id="preloader"></div>
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+    <!-- Vendor JS Files -->
+    <script src="../DesignA/vendor/aos/aos.js"></script>
+    <script src="../DesignA/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="../DesignA/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../DesignA/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="../DesignA/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="../DesignA/vendor/php-email-form/validate.js"></script>
+    <script src="../DesignA/vendor/waypoints/noframework.waypoints.js"></script>
+
+    <!-- Template Main JS File -->
+    <link href="../DesignA/css/style.css" rel="stylesheet">
+    <script src="../DesignA/js/main.js"></script>
+
+
+</body>
+
+</html>

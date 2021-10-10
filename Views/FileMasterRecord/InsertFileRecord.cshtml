@@ -1,0 +1,14 @@
+﻿@model CCPNCR_Record_Management.Models.FileMasterRecordVM
+@{
+    ViewBag.Title = "File Record";
+    if (Session["UserRoleType"].ToString() == "Admin")
+    {
+        Layout = "~/Views/Shared/MasterLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/UsersLayout.cshtml";
+    }
+}
+
+@Html.Partial("_InsertFileRecord", Model)

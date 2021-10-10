@@ -1,0 +1,127 @@
+﻿@model CCPNCR_Record_Management.Models.FileMasterRecordVM
+
+@if (@ViewBag.Message == "Success")
+{
+    <div class="alert alert-success alert fade show" role="alert">
+        <strong>Success !</strong>  File Record Inserted Successfully.
+    </div>
+}
+else if (@ViewBag.Message == "Duplicate")
+{
+    <div class="alert alert-danger alert fade show" role="alert">
+        <strong>Failed !</strong>  File Record Already Exists.
+    </div>
+}
+else if (@ViewBag.Message == "Alert")
+{
+    <div class="alert alert-danger alert fade show" role="alert">
+        <strong>Failed !</strong>  Something wrong, please check before submit.
+    </div>
+}
+else if (@ViewBag.Message!=null)
+{
+    <div class="alert alert-danger alert fade show" role="alert">
+        <strong>Error !</strong>  @ViewBag.Message
+    </div>
+}
+else if (@ViewBag.Validation != null && @ViewBag.Validation != "")
+{
+    <div class="alert alert-danger alert fade show" role="alert">
+        <strong>@ViewBag.Validation</strong>
+    </div>
+}
+<style>
+    div.scrollmenu {        
+        overflow-y: auto;
+        white-space: nowrap;
+    }
+
+</style>
+<h3 style="text-align:center">Add File Record</h3>
+<hr />
+
+    <div class="scrollmenu" style="padding-bottom:50px">
+        @using (Html.BeginForm("InsertFileRecord", "FileMasterRecord", FormMethod.Post, null))
+        {
+
+            if (Model != null)
+            {
+                <table class="table table-sm table-borderless table-responsive">
+
+                    <tr>
+                        <td colspan="3">
+                            <label style="margin-bottom:5px">File Subject (Minimum 10 Characters) : </label>
+                            @Html.TextAreaFor(m => m.FileRecordName, new { @class = "form-control FileRecordName", @style = "border: 1px solid black", @min = 10 })
+                            @Html.ValidationMessageFor(model => model.FileRecordName, " ", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2">
+                            <label style="margin-bottom:5px">File Type : </label>
+                            @Html.DropDownListFor(m => m.FileTypeId, new SelectList(Model.LIST_FileType, "FileTypeId", "FileTypeName"), "--Select File Type--", new { @class = "form-control", @style = "border: 1px solid black" })
+
+                        </td>
+                        <td>
+                            <label style="margin-bottom:5px">Volume : </label>
+                            @Html.DropDownListFor(m => m.FileVolumeId, new SelectList(Model.LIST_FileVolume, "FileVolumeId", "FileVolumeName"), "--Select Volume--", new { @class = "form-control", @style = "border: 1px solid black" })
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <label style="margin-bottom:5px">File No : </label>
+                            @Html.TextBoxFor(m => m.FileRecordNumber, new { @class = "form-control", @style = "height: auto; border: 1px solid black" })
+                            @Html.ValidationMessageFor(model => model.FileRecordNumber, " ", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            <label style="margin-bottom:5px">First Noting Page No : </label>
+                            @Html.TextBoxFor(m => m.NPStart, new { @class = "form-control", @style = "height: auto; border: 1px solid black", @type = "Number", @min = 0 })
+                            @Html.ValidationMessageFor(model => model.NPStart, " ", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            <label style="margin-bottom:5px">Last Noting Page No : </label>
+                            @Html.TextBoxFor(m => m.NPEnd, new { @class = "form-control", @style = "height: auto; border: 1px solid black", @type = "Number", @min = 0 })
+                            @Html.ValidationMessageFor(model => model.NPEnd, " ", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <label style="margin-bottom:5px">First Chain Page No : </label>
+                            @Html.TextBoxFor(m => m.CPStart, new { @class = "form-control", @style = "height: auto; border: 1px solid black", @type = "Number", @min = 0 })
+                            @Html.ValidationMessageFor(model => model.CPStart, " ", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            <label style="margin-bottom:5px">Last Chain Page No : </label>
+                            @Html.TextBoxFor(m => m.CPEnd, new { @class = "form-control", @style = "height: auto; border: 1px solid black", @type = "Number", @min = 0 })
+                            @Html.ValidationMessageFor(model => model.CPEnd, " ", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            <label style="margin-bottom:5px">Last Noting Signed By : </label>
+                            @Html.TextBoxFor(m => m.SignedByonlastNP, new { @class = "form-control", @style = "height: auto; border: 1px solid black", @type = "text" })
+                            @Html.ValidationMessageFor(model => model.SignedByonlastNP, " ", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr>
+
+                        <td>
+                            <label style="margin-bottom:5px">Last Date on Noting  : </label>
+                            @Html.TextBoxFor(m => m.DateonlastNP, new { @class = "form-control", @style = "height: auto; border: 1px solid black", @type = "Date" })
+                            @Html.ValidationMessageFor(model => model.DateonlastNP, " ", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            <br />
+                            <input type="submit" class="btn btn-primary" value="Add Record" style="margin-left:100px" />
+                        </td>
+                        <td>
+                            <br />
+                            <input type="submit" class="btn btn-dark" name="submitButton" value="Reset" />
+                        </td>
+                    </tr>
+                </table>
+
+            }
+        }
+    </div>

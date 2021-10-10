@@ -1,0 +1,24 @@
+﻿@model CCPNCR_Record_Management.Models.FileType
+
+@if (@ViewBag.message == "Alert")
+{
+    <div class="alert alert-danger alert fade show" role="alert">
+        <strong>Alert !</strong>  Something went wrongplease try agein later.
+    </div>
+}
+<div class="row" id="myformdata">
+    @if (Model != null)
+    {
+     
+        <div class="col-lg-12">
+            <div class="form-group col-md-6">
+                @Html.HiddenFor(model => model.FileTypeId, new { @class = "File_TypeId" })
+                <b>File Type Name: <span style="color: red">*</span></b>
+            </div>
+            <div class="form-group col-md-6">
+                @Html.TextBoxFor(modelitem => Model.FileTypeName, new { @class = "form-control File_Type" })
+            </div>
+        </div>
+    }
+</div>
+

@@ -1,0 +1,203 @@
+﻿@model CCPNCR_Record_Management.Models.FileVolume
+@{
+    int SrNo = 1;
+}
+<style>
+    .dk_header {
+        color: white;
+        background-color: dodgerblue;
+        text-align: center;
+        padding: 15px 0px;
+    }
+</style>
+
+<h2 style="text-align:center">List of File Volumes</h2>
+<fieldset class="col-lg-12">
+    <div class="form-group">
+        <div class="table-responsive">
+            @if (Model != null)
+            {
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>
+                                Sr. No
+                            </th>
+                            <th>
+                                File Volume
+                            </th>
+                            <th colspan="2" style="text-align:center">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    @if (Model.ListFileVolume.Count > 0)
+                    {
+                        for (int i = 0; i < Model.ListFileVolume.Count; i++)
+                        {
+
+                            <tr>
+                                <td>
+                                    @Html.HiddenFor(modelItem => Model.ListFileVolume[i].FileVolumeId, new { @class = "FileVolumeId" })
+                                    @SrNo.
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model.ListFileVolume[i].FileVolumeName, new { @class = "FileVolume" })
+                                </td>
+                                <td>
+                                    <div class="btn btn-success" onclick="EditFileVolume(@Model.ListFileVolume[i].FileVolumeId)">Edit</div>
+                                </td>
+                                <td>
+                                    <div class="btn btn-danger" onclick="DeleteFileVolume(@Model.ListFileVolume[i].FileVolumeId)">Delete</div>
+                                </td>
+                            </tr>
+                            SrNo++;
+                        }
+                    }
+                    else
+                    {
+                        <tr class="table-danger">
+                            <td colspan="4" style="text-align: center">No Data Exists</td>
+                        </tr>
+                    }
+                </table>
+
+            }
+        </div>
+    </div>
+</fieldset>
+<input type="hidden" id="hiddenFileVolumeId" />
+<div class="container">
+
+    <div class="modal" id="myModal" tabindex="1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="dk_header">Message</div>
+                <div class="modal-body">
+                    <p class="success-message">Are you sure you wish to delete this record ? </p>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn_delete" class="btn btn-success" onclick="ConfirmDelete()">Confirm Delete</button>
+                    <button class="btn btn-dark" data-dismiss="modal" onclick="$('#myModal').modal('hide'); window.location.href = window.location.href;">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="myEditModal" style="padding-top:100px" tabindex="1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="dk_header">Update File Volume</div>
+                <div class="modal-body" id="editModalBody">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" id="btnConfirm" onclick="ConfirmUpdate()">Confirm Update</button>
+                    <button class="btn btn-dark" onclick="$('#myEditModal').modal('hide'); window.location.href = window.location.href;">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+
+    var DeleteFileVolume = function (FileVolumeId)
+    {
+        $("#hiddenFileVolumeId").val(FileVolumeId);
+        $('#myModal').modal('show');
+    };
+
+    function ConfirmDelete() {
+        var filetypeid = $("#hiddenFileVolumeId").val();
+        if (filetypeid != '' && filetypeid != null)
+        {
+            $.ajax({
+                url: '/JSONCalls/DeleteFileVolume',
+                data: { FileVolumeId: filetypeid },
+                type: 'POST',
+                success: function (data) {
+                    if (data=="Success")
+                    {
+                        $('#btn_delete').remove();
+                        $('.success-message').add().html('Record deleted successfully');
+                        $('#row_' + FileTypeId).remove();
+                       
+
+                    }
+                    else if (data == "Record Linked") {
+                        $('#btn_delete').remove();
+                        $('.success-message').add().html('File Volume Not Deleted as it linked with Some Record.');
+                        $('#row_' + FileTypeId).remove();
+
+
+                    }
+                    else if (data == "Deletion Failed") {
+                        $('#btn_delete').remove();
+                        $('.success-message').add().html('!Record Not Deleted.');
+                        $('#row_' + FileTypeId).remove();
+                    }
+                }, error: function (err)
+                {
+                    $('#btn_delete').remove();
+                    $('#row_' + FileVolumeId).remove();
+                    $('.success-message').add().html(err.statusText);
+
+                }
+            });
+        } else {
+            $(".dk_header").add().html("Message");
+            $("#btn_delete").remove();
+            $(".modal-body").add().html("!Record Not Updated");
+
+        }
+    };
+
+    var EditFileVolume = function (FileVolumeId) {      
+        var url = '/FileVolume/EditFileVolume?FileVolumeId=' + FileVolumeId;
+        $('#editModalBody').load(url, function () {
+            $('#myEditModal').modal('show');
+        })
+    };
+
+    function ConfirmUpdate() {
+        var filetypeid = $(".File_VolumeId").val();
+        var filetype = $(".File_Volume").val();
+        if ((filetypeid != "" || filetypeid != null) && (filetype != "" || filetype != null)) {
+            $.ajax({
+                url: '/JSONCalls/UpdateFileVolume',
+                data: { FileVolumeId: filetypeid, FileVolume: filetype},
+                type: 'POST',
+                success: function (data)
+                {
+
+                    if (data == "Success") {
+
+                        $(".modal-body").add().html("File Volume Updated Successfully.");
+                        $(".dk_header").add().html("Message");
+                        $("#btnConfirm").remove();
+                    }
+                    else if (data =="Duplicate")
+                    {
+                        $(".modal-body").add().html("File Volume Already Exists");
+                        $(".dk_header").add().html("Message");
+                        $("#btnConfirm").remove();
+                    }
+                    else {
+                        $(".dk_header").add().html("Message");
+                        $("#btnConfirm").remove();
+                        $(".modal-body").add().html("!Record Not Updated");                       
+                    }
+                }
+            });
+        } else
+        {
+            $(".dk_header").add().html("Message");
+            $("#btnConfirm").remove();
+            $(".modal-body").add().html("!Record Not Updated");
+
+        }
+    };
+
+</script>

@@ -1,0 +1,358 @@
+﻿@model CCPNCR_Record_Management.Models.Login
+@{
+    Layout = null;
+
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        [type="button"] {
+            border: none;
+            font-size: 15px;
+            margin: 10px;
+            padding: 10px;
+            width: auto;
+            border-radius: 5px;
+            color: white;
+            background-color: orange;
+        }
+    </style>
+
+
+    <link href="~/DesignA/css/style.css" rel="stylesheet">
+    <link href="~/DesignA/js/main.js" type="text/javascript" rel="javascript" />
+</head>
+<body>
+
+    @if (Session["UserName"] == null && Convert.ToBoolean(TempData["LogoutFlag"]))
+    {
+        <script type="text/javascript">
+            alert("Alert ! Logout Successfully .");
+        </script>
+    }
+
+    @using (Html.BeginForm("Login", "Login", FormMethod.Post, null))
+    {
+
+        <div class="loginwindow">
+            <div class="Loginleftpanel">
+                <img src="~/Images/RecordImage2.png" />
+                <h1>Chief Coordinator Planner (NCR) Record Management System</h1>
+                <input type="button" value="Click here for Sign Up" onclick="ShowSignUp()" id="signupbtn" />
+            </div>
+
+
+            <div class="LoginRightpanel" id="LoginRightForm">
+                <h1>Login</h1>
+                @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter User Name" } })
+                <br />
+                <br />
+                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter Password" } })
+                <br />
+                <br />
+                <input type="submit" style="background-color:orange;color:white;font-size: 15px;margin: 10px;padding: 10px; width: auto; border-radius: 5px;" value="Click here to Login" />
+                <br />
+                <input type="button" id="forgetPwd_UN" value="Forget Password / Username" onclick='ForgetUserNamePwd()' />
+            </div>
+
+            @if (ViewBag.MessageLogin != null && ViewBag.MessageLogin != "")
+            {
+                <script type="text/javascript">
+
+                        alert("@ViewBag.MessageLogin");
+                </script>
+            }
+
+
+            <div class="ForgetForm" id="forgetForm" style="display:none">
+                <h1>Forget Username/Password</h1>
+                <input type="email" class="input-fields" id="emailidforget" placeholder="Enter Email Id" onchange="checkEmailId()" />
+                <br />
+                <br />
+                <input type="button" style="display:none" id="btnresetlink" value="Click here to Proceed" onclick="SendPwdResetLink()" />
+                <br />
+
+                <br />
+                <br />
+                <input type="button" value="Back to Login Page" onclick="window.location.href=('@Url.Action("Login", "Login")');" />
+                <br />
+                <br />
+                <label id="emailidforgetlabel" style="color:white;font-size:15px;"></label>
+            </div>
+
+
+            <div class="SignupForm" id="SignUpDiv" method="post" style="display:none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><h1>Sign Up</h1></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tr>
+                        <td><input type="text" class="input-fields" id="usernamesignup" onchange="checkusername()" placeholder="Enter User Name" /></td>
+                        <td><label id="usernamelabel" style="color:white;font-size:10px"></label></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" class="input-fields" id="firstNamesignup" placeholder="Enter First Name" /></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" class="input-fields" id="lastNamesignup" placeholder="Enter Last Name" /></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="email" class="input-fields" id="emailIdsignup" onchange='EmailVerify()' placeholder="Enter Email Id" /></td>
+                        <td><label id="emaillabel" style="color:white;font-size:10px"></label></td>
+                    </tr>
+                    <tr>
+                        <td><input type="password" class="input-fields" id="passwordsignup" onchange='PasswordVerify()' min="6" placeholder="Enter Password" /></td>
+                        <td><label id="pwdlabel" style="color:white;font-size:10px"></label></td>
+                    </tr>
+                    <tr>
+                        <td><input type="number" class="input-fields" id="mobilenosignup" onchange='MobileVerify()' placeholder="Enter Mobile No without 0 Prifix" /></td>
+                        <td><label id="moblabel" style="color:white;font-size:10px"></label></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><input type="button" id="signupbutton" style="display:none" value="Sign Up" onclick="SignUp()" /></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    }
+</body>
+</html>
+
+
+
+<script src="~/Scripts/jquery-3.4.1.js" crossorigin="anonymous"></script>
+<script type="text/javascript">
+    function checkusername() {
+        var tempName = $("#usernamesignup").val();
+        if (tempName != null || tempName != '') {
+            $.ajax({
+                url: '/JSONCalls/CheckUserNameAvailability',
+                type: "Get",
+                dataType: "json",
+                contentType: "application/json",
+                data: { UserName: tempName },
+                success: function (res) {
+                   if (res > 0) {
+                       $('#usernamesignup').css("background", "PaleGreen");
+                       $('#usernamelabel').text('Username Available');
+                       $('#signupbutton').show();
+                    }
+                    else {
+                        $('#usernamesignup').css("background", "DarkSalmon");
+                       $('#usernamelabel').text(tempName + '  is Not Available');
+                       $('#signupbutton').hide();
+                    }
+                },
+                error() {
+                    alert('Error! Please Try again later.');
+                    $('#signupbutton').hide();
+                }
+            });
+        }
+        else {
+            $('#signupbutton').hide();
+            alert('Enter Username.');
+        }
+    };
+
+    function checkEmailId() {
+        var tempEmail = $("#emailidforget").val();
+        if (tempEmail != null || tempEmail != '') {
+            $.ajax({
+                url: '/JSONCalls/CheckUserEmail',
+                type: "Get",
+                dataType: "json",
+                contentType: "application/json",
+                data: { UserEmail: tempEmail },
+                success: function (res) {
+                    if (res > 0) {
+                        $('#emailidforgetlabel').text('');
+                        $('#emailidforget').css("background", "PaleGreen");
+                        $('#btnresetlink').show();
+                    }
+                    else {
+                        $('#emailidforget').css("background", "DarkSalmon");
+                        $('#emailidforgetlabel').text('Email Id Not Exists.');
+                        $('#btnresetlink').hide();
+                    }
+                },
+                error() {
+                    $('#emailidforgetlabel').text('');
+                    alert('Error! Please Try again later.');
+                    $('#btnresetlink').hide();
+                }
+            });
+        }
+        else {
+            $('#emailidforgetlabel').text('');
+            alert('Enter Vaild Email Id.');
+            $('#btnresetlink').hide();
+        }
+    };
+
+    function SendPwdResetLink() {
+        var tempUserEmail = $("#emailidforget").val();
+        var div3 = document.getElementById("btnresetlink");
+        div3.value = "Sending Link...";
+        if (tempUserEmail != null || tempUserEmail != '') {
+            $.ajax({
+                url: '/JSONCalls/SendPwdResetLink',
+                type: "Get",
+                dataType: "json",
+                contentType: "application/json",
+                data: { UserEmail: tempUserEmail },
+                success: function (res) {
+                    if (res.match("Mail Sent"))
+                    {
+                        var r = confirm('A Password Reset Link forwarded to your Registered Email Id.');
+                        if (r == true) {
+                           window.location.href=('@Url.Action("Login", "Login")');
+                        }
+                        $('btnresetlink').hide();
+                    }
+                    else if (res.match("NOReturnCode"))
+                    {
+                        alert('Error: A Password Reset Link Not forwarded.');
+                        div3.value = "Click here to Proceed";
+                        $('btnresetlink').hide();
+                    }
+                    else {
+                        alert(res);
+                        div3.value = "Click here to Proceed";
+                        $('btnresetlink').hide();
+                    }
+                },
+                error() {
+                    alert('Error! Please Try again later.');
+                    div3.value = "Click here to Proceed";
+                    $('btnresetlink').hide();
+                }
+            });
+        }
+        else {
+            alert('Enter Vaild Email Id.');
+            div3.value = "Click here to Proceed";
+            $('btnresetlink').hide();
+        }
+    };
+
+    function ShowSignUp() {
+        var div = document.getElementById("SignUpDiv");
+        if (div.style.display == "none") {
+            div.style.display = "block";
+            var div2 = document.getElementById("LoginRightForm");
+            div2.style.display = "none";
+            var div3 = document.getElementById("signupbtn");
+            div3.value = "Back to Sign In";
+            var div4 = document.getElementById("forgetForm");
+            div4.style.display = "none";
+
+        }
+        else if (document.getElementById("signupbtn").value == "Back to Sign In") {
+            var div = document.getElementById("LoginRightForm");
+            div.style.display = "block";
+            var div2 = document.getElementById("SignUpDiv");
+            div2.style.display = "none";
+            var div3 = document.getElementById("signupbtn");
+            div3.value = "Click here for Sign Up";
+        }
+    };
+
+    function ForgetUserNamePwd() {
+        if (document.getElementById("forgetPwd_UN").value == "Forget Password / Username") {
+            var div2 = document.getElementById("LoginRightForm");
+            div2.style.display = "none";
+            var div3 = document.getElementById("forgetForm");
+            div3.style.display = "block";
+        }
+    };
+
+    function EmailVerify() {
+        var mailformat = /^([a-zA-Z0-9_.+-])+\@@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        var email = $("#emailIdsignup").val();
+        if (email.match(mailformat)) {
+            $('#emaillabel').text('Valid email address!');
+            $('#emailIdsignup').css("background", "PaleGreen");
+            $('#signupbutton').show();
+        }
+        else {
+            $('#emaillabel').text('Invalid email address!');
+            $('#emailIdsignup').css("background", "DarkSalmon");
+            $('#signupbutton').hide();
+        }
+    };
+
+    function MobileVerify() {
+        var mobileformat = /^\d{10}$/;
+        var mob = $("#mobilenosignup").val();
+        if (mob.match(mobileformat))
+        {
+            $('#moblabel').text('Valid');
+            $('#mobilenosignup').css("background", "PaleGreen");
+            $('#signupbutton').show();
+        }
+        else {
+            $('#moblabel').text('Invalid');
+            $('#mobilenosignup').css("background", "DarkSalmon");
+            $('#signupbutton').hide();
+        }
+    };
+
+    function PasswordVerify() {
+        var pwdformat = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{6,20}$/;
+        var pwd = $("#passwordsignup").val();
+        if (pwd.match(pwdformat)) {
+            $('#pwdlabel').text('Valid Password');
+            $('#passwordsignup').css("background", "PaleGreen");
+            $('#signupbutton').show();
+        }
+        else {
+            alert("Password must be minimum 6 characters long which contain at least one lowercase letter, one uppercase letter, one numeric digit, and one special character");
+            $('#passwordsignup').css("background", "DarkSalmon");
+            $('#pwdlabel').text('Invalid Password');
+            $('#signupbutton').hide();
+        }
+    };
+
+    function SignUp() {
+        var unsu = $("#usernamesignup").val();
+        var fnsu = $("#firstNamesignup").val();
+        var lnsu = $("#lastNamesignup").val();
+        var eisu = $("#emailIdsignup").val();
+        var psu = $("#passwordsignup").val();
+        var mnsu = $("#mobilenosignup").val();
+        if (unsu != '' && fnsu != '' && lnsu != '' && eisu != '' && psu != '' && mnsu != '') {
+            $.ajax({
+                url: '/JSONCalls/SignUp',
+                type: "Get",
+                dataType: "json",
+                contentType: "application/json",
+                data: {
+                    UserName: unsu,
+                    FName: fnsu,
+                    LName: lnsu,
+                    Email: eisu,
+                    Password: psu,
+                    Mobile: mnsu
+                },
+                success: function (res) {
+                    alert(JSON.stringify(res));
+                    location.reload();
+                }, error: function (res) {
+                    alert(JSON.stringify(res));
+                    location.reload();
+                }
+            });
+        } else { alert('Please fill all fields.'); }
+
+    };
+
+</script>

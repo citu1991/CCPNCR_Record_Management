@@ -1,0 +1,28 @@
+﻿
+@using PagedList.Mvc;
+@model PagedList.IPagedList<CCPNCR_Record_Management.Models.FileRecord>
+@{
+    ViewBag.Title = "Files Inside Record";
+    if (Session["UserRoleType"].ToString() == "Admin")
+    {
+        Layout = "~/Views/Shared/MasterLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/UsersLayout.cshtml";
+    }
+}
+
+<style>
+    td {
+        border: 1px solid black;
+        text-align: center;
+    }
+
+    tr {
+        text-align: center;
+    }
+</style>
+<h3 style="text-align:center">List of Files Currently Inside Record</h3>
+
+@Html.Partial("_FileInsideRecord", Model)

@@ -1,0 +1,122 @@
+﻿@using PagedList.Mvc;
+@model PagedList.IPagedList<CCPNCR_Record_Management.Models.FileRecord>
+@{
+    int SrNo = 0;
+}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<fieldset class="col-lg-12" style="padding-bottom:50px">
+    <div class="form-group">
+        <div style="float:right">
+            <button type="submit" value="ExportToExcel" onclick="ExporttoExcel('EXCELAllINSIDEFILE')" name="action" style="font-size:10px;width:100px;margin-bottom:10px">
+                Export To Excel
+            </button>
+            <button type="submit" value="ExportToPdf" onclick="ExporttoPdf('PDFAllINSIDEFILE')" name="action" style="font-size:10px;width:100px;margin-bottom:10px">
+                Export To PDF
+            </button>
+        </div>
+        <div class="table table-responsive">
+
+            @if (Model != null)
+            {
+                <table class=" table table-responsive table-sm" style="font-size:small">
+                    <thead class="table-dark">
+                        <tr>
+                           
+                            <th>
+                                Sr. No
+                            </th>
+                            <th>
+                                File No-Vol
+                            </th>
+                            <th>
+                                File Subject
+                            </th>
+                            <th>
+                                NP First Page
+                            </th>
+                            <th>
+                                NP Last Page
+                            </th>
+
+                            <th>
+                                CP First Page
+                            </th>
+                            <th>
+                                CP Last Page
+                            </th>
+                            <th>
+                                Date on Last NP
+                            </th>
+                            <th>
+                                Last Sign by
+                            </th>
+                        </tr>
+                    </thead>
+                    @if (Model.Count > 0)
+                    {
+                        for (int i = 0; i < Model.Count; i++)
+                        {
+                <tr>
+                   
+                    <td>
+                        @(SrNo + ((Model.PageNumber - 1) * Model.PageSize) + 1).
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model[i].FileRecordNumber)-@Html.DisplayFor(modelItem => Model[i].FileVolumeName)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => Model[i].FileRecordName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model[i].NPStart)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model[i].NPEnd)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model[i].CPStart)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model[i].CPEnd)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model[i].DateonlastNP.Date.Day)/@Html.DisplayFor(modelItem => Model[i].DateonlastNP.Date.Month)/@Html.DisplayFor(modelItem => Model[i].DateonlastNP.Date.Year)
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model[i].SignedByonlastNP)
+                    </td>
+                </tr>
+                            SrNo++;
+                        }
+                    }
+                    else
+                    {
+                        <tr class="table-danger">
+                            <td colspan="9" style="text-align: center">No Files Inside Record.</td>
+                        </tr>
+                    }
+                </table>
+
+            }
+
+        <nav style="text-align:center;">
+            <ul class="pagination">
+                Showing Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount  [ Total Record Count- @Model.TotalItemCount ]
+                @Html.PagedListPager(Model, page => Url.Action("FileInsideRecord", new { page }))
+            </ul>
+        </nav>
+        </div>
+    </div>
+</fieldset>
+<script>
+    var ExporttoExcel = function (ExportTypeMessage) {
+        document.location = '/FileMasterRecord/ExporttoExcel?ExportTypeMessage=' + ExportTypeMessage;
+    };
+
+    var ExporttoPdf = function (ExportTypeMessage) {
+        document.location = '/FileMasterRecord/ExporttoPdf?ExportTypeMessage=' + ExportTypeMessage;
+    };
+</script>
+

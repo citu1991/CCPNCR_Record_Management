@@ -1,0 +1,116 @@
+﻿@model CCPNCR_Record_Management.Models.FileInOut
+@{
+
+    ViewBag.Title = "Load_In_out";
+    if (Session["UserRoleType"].ToString() == "Admin")
+    {
+        Layout = "~/Views/Shared/MasterLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/UsersLayout.cshtml";
+    }
+}
+
+@if (@ViewBag.Message == "Success In Record")
+{
+    <div class="alert alert-success alert fade show" role="alert">
+        <strong>Success !</strong>  File Added Successfully in Record.
+    </div>
+}
+
+else if (@ViewBag.Message == "Failed In Record")
+{
+<div class="alert alert-danger alert fade show" role="alert">
+    <strong>Failed !</strong> File Not Added in Record.
+</div>
+}
+
+@if (@ViewBag.Message == "Success")
+{
+    <div class="alert alert-success alert fade show" role="alert">
+        <strong>Success !</strong>  File Approval Sent to User Successfully.
+    </div>
+}
+
+else if (@ViewBag.Message == "Failed")
+{
+    <div class="alert alert-danger alert fade show" role="alert">
+        <strong>Failed !</strong> File Approval sent failed.
+    </div>
+}
+else if (@ViewBag.Validation != null && @ViewBag.Validation != "")
+{
+    <div class="alert alert-danger alert fade show" role="alert">
+        <strong>@ViewBag.Validation</strong>
+    </div>
+}
+
+<h3 style="text-align:center">File In-Out Status</h3>
+<hr />
+
+<fieldset class="col-lg-12" style="margin-bottom: 100px;">
+    <div class="form-group">
+        <div class="table table-responsive">
+
+            @using (Html.BeginForm("FileIn_Out", "FileMasterRecord", FormMethod.Post, null))
+            {
+                if (Model != null)
+                {
+                    <table class="table table-responsive table-sm table-borderless" style="font-size:medium;">
+                        <thead class="table-dark" style="text-align:center">
+                            <tr>
+                                <th>
+                                    Files In Record {File No--Type--Subject}
+                                </th>
+                                <th>
+                                    Select User and Action
+                                </th>
+                                <th>
+                                    File Out of Record {File No--Type--Subject}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tr style="text-align:center">
+
+                            <td>
+                                @if (Model.LIST_FileIn.Count > 0)
+                                {
+                                    @Html.ListBoxFor(m => m.LIST_FileIn, new SelectList(Model.LIST_FileIn, "FileRecordId", "FileRecordCompleteName"), new { @style = "height:500px; width: 350px;overflow-x:scroll;" })
+                                }
+                                else
+                                { <span style="color:red">No File Inside Record</span>}
+
+                            </td>
+                            <td>
+                                <label style="font:bold">Select User :</label> @Html.DropDownListFor(m => m.UserId, new SelectList(Model.LIST_User, "UserId", "UserName"), "--Select User--")
+                                <br />
+                                <br />
+                                <textarea name="rkremarks" rows="4" cols="30" placeholder="Approval/Return Remarks by Record Keeper"></textarea>
+                                <br />
+
+                                <br />
+
+                                <input type="submit" class="btn-sm btn-primary" value="Send File For Approval >>" />
+                                <br />
+                                <br />
+                                <input type="submit" class="btn-sm btn-success" name="btnInrecord" value="<< Keep File In Record" />
+                                <br />
+                                <br />
+                                <input type="submit" class="btn-sm btn-dark" name="btncancel" value="Cancel" />
+                            </td>
+                            <td>
+                                @if (Model.LIST_FileOut.Count > 0)
+                                {
+                                    @Html.ListBoxFor(m => m.LIST_FileOut, new SelectList(Model.LIST_FileOut, "FileRecordId", "FileRecordCompleteName"), new { @style = "height:500px; width: 350px,overflow-x:scroll;" })
+                                }
+                                else
+                                { <span style="color:red">No File Outside Record</span>}
+                            </td>
+                        </tr>
+                    </table>
+                }
+            }
+        </div>
+    </div>
+</fieldset>
